@@ -104,6 +104,19 @@ public class MyLinkedList<E> implements Iterable<E> {
         return true;
     }
 
+    public void add(E item, int index) throws Exception {
+        size++;
+        if(index > size)
+            throw new Exception("Bad input");
+        Node temp = head;
+        for(int i = 0; i < index; i++) {
+            temp = temp.next;
+        }
+        Node n = new Node(item);
+        n.next = temp.next;
+        temp.next = n;
+    }
+
     public int size() {
         return size;
     }

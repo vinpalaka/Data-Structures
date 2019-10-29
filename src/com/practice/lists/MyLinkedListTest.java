@@ -40,6 +40,20 @@ public class MyLinkedListTest {
 
     }
 
+    @Test
+    public void addByIndex() throws Exception {
+        MyLinkedList<Integer> list = new MyLinkedList<>();
+        list.add(1);
+        list.add(2);
+        list.add(4);
+        list.add(5);
+
+        list.add(3, 0);
+
+        assertEquals(5, list.size());
+        list.print();
+    }
+
     @Test(expected = NoSuchElementException.class)
     public void iterator() {
         MyLinkedList<Integer> list = new MyLinkedList<>();
