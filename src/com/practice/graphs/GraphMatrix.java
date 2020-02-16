@@ -3,47 +3,72 @@ package com.practice.graphs;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GraphMatrix extends Graph {
+public class GraphMatrix<E> {
 
     private int[][] adjEdges;
     private List<Vertex> vertices;
 
+    protected static class Vertex<E> {
+        protected boolean isVisited;
+        protected E data;
 
-    @Override
-    public void addVertex(Vertex data) {
-        if(vertices == null) {
-            vertices = new ArrayList<>();
+        protected Vertex(E data) {
+            this.data = data;
         }
-        vertices.add(data);
+
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (!(o instanceof GraphMatrix.Vertex))
+                return false;
+            GraphMatrix.Vertex<?> vertex = (GraphMatrix.Vertex<?>) o;
+            return Objects.equals(data, vertex.data);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(data);
+        }
     }
 
-    @Override
-    public void addEdge(Vertex one, Vertex two) {
-        if(adjEdges == null) {
+    public GraphMatrix() {
+        vertices = new ArrayList<>();
+    }
+
+    public void addVertex(E data) {
+        Vertex<E> vertex = new Vertex<>(data);
+        vertices.add(vertex);
+    }
+
+    public void addEdge(E one, E two) {
+        if(adjEdges == null){
             adjEdges = new int[vertices.size()][vertices.size()];
         }
-        int i = vertices.indexOf(one);
-        int j = vertices.indexOf(two);
+
+        int i = vertices.indexOf(new Vertex<E>(one));
+        int j = vertices.indexOf(new Vertex<E>(two));
 
         adjEdges[i][j] = 1;
         adjEdges[j][i] = 1;
     }
 
-    @Override
-    public boolean isNeighbor(Vertex one, Vertex two) {
-        int i = vertices.indexOf(one);
-        int j = vertices.indexOf(two);
+    public boolean isNeighbor(E one, E two) {
+        int i = vertices.indexOf(new Vertex<E>(one));
+        int j = vertices.indexOf(new Vertex<E>(two));
         return adjEdges[i][j] == 1;
     }
 
-    @Override
-    public Vertex bfs(Vertex needle) {
-        Vertex startVertex = vertices.get(0);
-        if(startVertex.data.equals(needle.data)) {
-            return startVertex;
+    public boolean bfs(E one, E two) {
+        int i = vertices.indexOf(new Vertex<E>(one));
+        Vertex<E> startVertex = vertices.get(i);
+        if(startVertex.data.equals(two)) {
+            return true;
         }
         ArrayDeque<Vertex> queue = new ArrayDeque<>();
         startVertex.isVisited = true;
@@ -53,8 +78,8 @@ public class GraphMatrix extends Graph {
             Iterable<Vertex> neighbors = getUnvisitedAdjVertices(curr);
             for(Vertex v : neighbors) {
                 System.out.println(v.data);
-                if(v.data.equals(needle.data)) {
-                    return v;
+                if(v.data.equals(two)) {
+                    return true;
                 } else {
                     v.isVisited = true;
                     queue.add(v);
@@ -65,10 +90,9 @@ public class GraphMatrix extends Graph {
         for(Vertex v : vertices) {
             v.isVisited = false;
         }
-        return null;
+        return false;
     }
 
-    @Override
     public Vertex dfs(Vertex needle) {
         Vertex startVertex = vertices.get(0);
         if(startVertex.data.equals(needle.data)) {
@@ -115,11 +139,4 @@ public class GraphMatrix extends Graph {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Iterable<Vertex> getAdjVertices(Vertex vertex) {
-        return IntStream.range(0,adjEdges[0].length)
-                .filter(i -> adjEdges[vertices.indexOf(vertex)][i] == 1)
-                .mapToObj(x -> vertices.get(x))
-                .collect(Collectors.toList());
-    }
 }

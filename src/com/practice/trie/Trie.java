@@ -1,4 +1,4 @@
-package com.practice.trees;
+package com.practice.trie;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -102,6 +102,7 @@ public class Trie {
 
     private void printIfWord(char c, List<TrieNode> list, TrieNode node) {
         TrieNode current = node.getChildren().get(c);
+
         int i = 0;
         while(i < list.size()) {
             TrieNode next = list.remove(i);

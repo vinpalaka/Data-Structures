@@ -10,7 +10,7 @@ public class MyHashtable<K, V> {
 
     private Node[] table;
     public int size = 0;
-    int capacity = 29; //large prime number
+    int capacity; //large prime number
     float loadFactor = .75f; //Ratio of elements to capacity. Could use this to resize.
 
     class Node<K, V> {
@@ -45,15 +45,12 @@ public class MyHashtable<K, V> {
             //Collision
             //Key could be anywhere in List, so traverse through list to check.
             Node next = table[hash];
-            Node prev = next;
             while(next != null && !next.key.equals(key)) {
-                prev = next;
                 next = next.next;
             }
             if(next != null && next.key.equals(key)) {
                 //Over write existing value
                 next.value = value;
-                prev.next = next;
             } else {
                 //Node is not in list, so add new Node.
                 Node<K, V> newValue = new Node(key, value);
@@ -67,8 +64,8 @@ public class MyHashtable<K, V> {
         }
     }
 
+    //https://runzhuoli.me/2018/09/20/why-hashmap-size-power-of-2.html
     private int getHash(K key) {
-        int [][] x = new int[10][11];
         //What is hashCode?
         return Math.abs(key.hashCode() % capacity);// Remainder of capacity will always be a index less than capacity.
     }

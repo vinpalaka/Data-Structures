@@ -8,7 +8,7 @@ public class GraphTest {
     IGraph<Graph.Vertex> graph;
 
 
-    protected Graph.Vertex FREMONT = new Graph.Vertex("Fremont");
+    Graph.Vertex FREMONT = new Graph.Vertex("Fremont");
     Graph.Vertex SAN_JOSE = new Graph.Vertex("San Jose");
     Graph.Vertex OAKLAND = new Graph.Vertex("Oakland");
     Graph.Vertex PALO_ALTO = new Graph.Vertex("Palo Alto");

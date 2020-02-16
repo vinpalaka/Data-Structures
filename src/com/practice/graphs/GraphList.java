@@ -5,48 +5,78 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class GraphList<E> extends Graph  {
+public class GraphList<E> {
 
     Map<Vertex, Set<Vertex>> adjList;
     Map<E, Vertex> vertexMap;
 
-    public GraphList() {
+    protected static class Vertex<E> {
+        protected boolean isVisited;
+        protected E data;
 
-    }
-
-    @Override
-    public void addVertex(Vertex data) {
-        if(adjList == null) {
-            adjList = new HashMap<>();
+        protected Vertex(E data) {
+            this.data = data;
         }
-        adjList.put(data, new HashSet<>());
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (!(o instanceof Vertex))
+                return false;
+            Vertex<?> vertex = (Vertex<?>) o;
+            return Objects.equals(data, vertex.data);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(data);
+        }
     }
 
-    @Override
-    public void addEdge(Vertex one, Vertex two) {
-        if(adjList.containsKey(one)) {
+    public GraphList() {
+        adjList = new HashMap<>();
+    }
+
+    public void addVertex(E data) {
+        Vertex<E> vertex = new Vertex<>(data);
+        adjList.merge(vertex, new HashSet<>(), (old, newHashSet) -> {
+            old.addAll(newHashSet);
+            return old;
+        });
+    }
+
+    public void addEdge(E first, E second) {
+        Vertex<E> one = new Vertex<>(first);
+        Vertex<E> two = new Vertex<>(second);
+        if (adjList.containsKey(one)) {
             adjList.get(one).add(two);
         } else {
-            adjList.put(one, Stream.of(two).collect(Collectors.toSet()));
+            adjList.put(one, new HashSet<>(Collections.singleton(two)));
         }
 
         if(adjList.containsKey(two)) {
             adjList.get(two).add(one);
         } else {
-            adjList.put(two, Stream.of(one).collect(Collectors.toSet()));
+            adjList.put(two, new HashSet<>(Collections.singleton(one)));
         }
     }
 
-    @Override
-    public boolean isNeighbor(Vertex one, Vertex two) {
-        return adjList.get(one).contains(two);
+    public boolean isNeighbor(E one, E two) {
+        return adjList.get(new Vertex<E>(one)).contains(new Vertex<E>(two));
     }
 
-    @Override
-    public Vertex bfs(Vertex needle) {
-        Vertex startVertex = adjList.entrySet().iterator().next().getKey();
+
+    //Use breadth first search to see if there is a path from start to end
+    public boolean bfs(E start, E end) throws Exception {
+        Vertex<E> startVertex = new Vertex<>(start);
+        Vertex<E> needle = new Vertex<>(end);
+        if(!adjList.containsKey(startVertex)) {
+            throw new Exception("Did not find start node.");
+        }
+
         if(startVertex.data.equals(needle.data)) {
-            return startVertex;
+            return true;
         }
         ArrayDeque<Vertex> queue = new ArrayDeque<>();
         startVertex.isVisited = true;
@@ -57,7 +87,7 @@ public class GraphList<E> extends Graph  {
             for(Vertex v : neighbors) {
                 System.out.println(v.data);
                 if(v.data.equals(needle.data)) {
-                    return v;
+                    return true;
                 } else {
                     v.isVisited = true;
                     queue.add(v);
@@ -69,15 +99,19 @@ public class GraphList<E> extends Graph  {
         while(iter.hasNext()) {
             iter.next().getKey().isVisited=false;
         }
-        return null;
+        return false;
     }
 
+    //Use depth first search to see if there is a path from start to end
+    public boolean dfs(E start, E end) throws Exception {
+        Vertex<E> startVertex = new Vertex<>(start);
+        Vertex<E> needle = new Vertex<>(end);
+        if(!adjList.containsKey(startVertex)) {
+            throw new Exception("Did not find start node.");
+        }
 
-    @Override
-    public Vertex dfs(Vertex needle) {
-        Vertex startVertex = adjList.entrySet().iterator().next().getKey();
         if(startVertex.data.equals(needle.data)) {
-            return startVertex;
+            return true;
         }
         ArrayDeque<Vertex> stack = new ArrayDeque<>();
         startVertex.isVisited = true;
@@ -89,7 +123,7 @@ public class GraphList<E> extends Graph  {
                 stack.pop();
             } else {
                 if(needle.data.equals(neighbor.data)) {
-                    return neighbor;
+                    return true;
                 } else {
                     neighbor.isVisited = true;
                     stack.push(neighbor);
@@ -100,7 +134,7 @@ public class GraphList<E> extends Graph  {
         while(iter.hasNext()) {
             iter.next().getKey().isVisited=false;
         }
-        return null;
+        return false;
     }
 
     private Vertex getUnvisitedNeighbor(Vertex vertex) {
@@ -118,7 +152,6 @@ public class GraphList<E> extends Graph  {
                 .collect(Collectors.toSet());
     }
 
-    @Override
     public Iterable<Vertex> getAdjVertices(Vertex vertex) {
         return adjList.get(vertex);
     }

@@ -435,6 +435,7 @@ public class BinarySearchTree<E extends Comparable<E>> {
         if(pos == ar.length) {
             ar = Arrays.copyOf(ar, pos * 2);
         }
+
         ar[pos++] = (E) n.data;
         ar = getArray(n.right, ar, pos);
         return ar;

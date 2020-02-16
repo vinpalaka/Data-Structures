@@ -2,6 +2,7 @@ package com.practice.lists;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
@@ -20,6 +21,8 @@ public class MyLinkedListTest {
     @Test
     public void add() {
         MyLinkedList<Integer> list = new MyLinkedList<>();
+        ArrayList s;
+
         list.add(1);
         list.add(2);
         list.add(3);

@@ -1,6 +1,7 @@
-package com.practice.trees;
+package com.practice.trie;
 
 
+import com.practice.trie.Trie;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,12 +19,12 @@ public class TrieTest {
         List<String> words = new ArrayList<>(Arrays.asList("work", "wait", "bone", "bait", "cat", "bat", "workspace"));
         Trie trie = new Trie(words);
         Assert.assertFalse(trie.isPrefix("wi"));
-        Assert.assertTrue(trie.isPrefix("wor"));
+        Assert.assertFalse(trie.isPrefix("worki"));
         Assert.assertFalse(trie.isPrefix("ap"));
         Assert.assertFalse(trie.isPrefix("work"));
-
-
-
+        Assert.assertFalse(trie.isPrefix("tim"));
+        Assert.assertFalse(trie.isPrefix("workspaces"));
+        Assert.assertTrue(trie.isPrefix("bon"));
     }
     @Test
     public void contains() {
@@ -33,7 +34,8 @@ public class TrieTest {
         Assert.assertFalse(trie.contains("wor"));
         Assert.assertFalse(trie.contains("trem"));
         Assert.assertTrue(trie.contains("workspace"));
-
+        Assert.assertFalse(trie.contains("boneyard"));
+        Assert.assertFalse(trie.contains("space"));
     }
 
     @Test
@@ -42,6 +44,7 @@ public class TrieTest {
         Trie trie = new Trie(words);
         System.out.println(trie.getAutoComplete("wo"));
         System.out.println(trie.getAutoComplete("to"));
+        System.out.println(trie.getAutoComplete("as"));
 
     }
 
